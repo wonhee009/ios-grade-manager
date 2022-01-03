@@ -4,18 +4,10 @@
 //  Copyright © yagom. All rights reserved.
 //
 
-/*
- * 메뉴 출력, 잘못된 입력 처리(1~5, x)
- * - 이후에도 잘못된 입력이 있다면 처리 필요
- * 학생 추가: 이름이 이미 존재한다면 추가하지 않음
- * 학생 삭제: 없는 학생은 삭제 하지 않음
- */
-
 import Foundation
 
 enum State: String {
     case start
-    case managing
     case exit = "X"
 }
 
@@ -27,18 +19,14 @@ enum Function: Int, CaseIterable {
     case showAverage
 }
 
-var currentState: State = .start
 var manager: GradeManager?
 let printManager = GeneralPrintManager()
 
 // MARK: - Manager LifeCycle
 
-if currentState == .start {
-    start()
-    currentState = .managing
-}
+gradeManageStart()
 
-while currentState == .managing {
+while manager?.currentState != .exit {
     printManager.showManageMessage()
     guard let input = readLine()?.trimmed(),
           input.isNotEmpty else {
@@ -47,7 +35,7 @@ while currentState == .managing {
           }
 
     if printManager.isExit(input) {
-        currentState = .exit
+        manager?.currentState = .exit
         continue
     }
     guard let function = printManager.isFunctionNumber(input) else {
@@ -58,17 +46,17 @@ while currentState == .managing {
     manager?.choiceFunction(function)
 }
 
-if currentState == .exit {
-    reset()
+if manager?.currentState == .exit {
+    gradeManageReset()
     printManager.showExitMessage()
 }
 
 // MARK: - Method
 
-func start() {
+func gradeManageStart() {
     manager = GradeManager()
 }
 
-func reset() {
+func gradeManageReset() {
     manager = nil
 }

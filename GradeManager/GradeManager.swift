@@ -20,7 +20,12 @@ private enum Text {
 }
 
 final class GradeManager {
+    var currentState: State
     private var students: [String : Student] = [:]
+
+    init() {
+        currentState = .start
+    }
 
     func choiceFunction(_ function: Function) {
         switch function {
